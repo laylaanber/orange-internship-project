@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orange Coding Academy Intern Tasks</title>
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- 
+    ==============================================
+    NAVIGATION BAR
+    ============================================== 
+    -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <!-- Logo -->
+            <div class="nav-logo">
+                <img src="orange logo.webp" alt="Orange Logo">
+            </div>
+            
+            <!-- Site Title -->
+            <div class="nav-title">
+                <h2>Coding Academy</h2>
+                <p>Empowering digital talents</p>
+            </div>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="hamburger" id="menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <!-- Navigation Links -->
+            <div class="nav-links">
+                <a href="index.html" class="active">Tasks</a>
+                <a href="projects.html">Projects</a>
+                <a href="#">Assignments</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 
+    ==============================================
+    TASK MANAGER MAIN CONTENT
+    ============================================== 
+    -->
+    <div class="container">
+        <h1>Internship Task Manager</h1>
+        
+        <div class="todo-container">
+            <!-- 
+            ==============================================
+            INPUT SECTION
+            ============================================== 
+            -->
+            <div class="input-container">
+                <div class="input-group">
+                    <input type="text" 
+                           id="task-input" 
+                           placeholder="Add a new task or assignment..." required>
+                    <div class="input-row">
+                        <input type="date" 
+                               id="due-date-input" 
+                               aria-label="Due date">
+                        <select id="priority-select" size="1">
+                            <option value="low">Low Priority</option>
+                            <option value="medium" selected>Medium Priority</option>
+                            <option value="high">High Priority</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="add-task-btn">Add Task</button>
+            </div>
+            
+            <!-- 
+            ==============================================
+            SEARCH & FILTERING
+            ============================================== 
+            -->
+            <div class="search-container">
+                <input type="text" 
+                       id="search-input" 
+                       placeholder="Search tasks...">
+            </div>
+            
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="active">Pending</button>
+                <button class="filter-btn" data-filter="completed">Completed</button>
+            </div>
+            
+            <div class="sort-container">
+                <label for="sort-select">Sort by:</label>
+                <select id="sort-select" size="1">
+                    <option value="date-desc">Newest first</option>
+                    <option value="date-asc">Oldest first</option>
+                    <option value="alpha-asc">A-Z</option>
+                    <option value="alpha-desc">Z-A</option>
+                    <option value="priority">Priority</option>
+                    <option value="due-date">Due Date</option>
+                </select>
+            </div>
+            
+            <!-- 
+            ==============================================
+            TASK LIST
+            ============================================== 
+            -->
+            <ul id="task-list">
+                <!-- Tasks will be added here dynamically -->
+            </ul>
+            
+            <!-- 
+            ==============================================
+            FOOTER
+            ============================================== 
+            -->
+            <div class="list-footer">
+                <span id="tasks-counter">0 tasks left</span>
+                <button id="clear-completed">Clear Completed</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="js/index.js"></script>
+</body>
+</html>

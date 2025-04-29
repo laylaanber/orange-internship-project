@@ -1,0 +1,705 @@
+/* ====================================
+   GLOBAL STYLES & VARIABLES
+   ==================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+:root {
+    /* Color palette */
+    --orange-primary: #ff6f00;
+    --orange-dark: #e65100;
+    --orange-light: #ffa726;
+    --white: #ffffff;
+    --light-gray: #f5f5f5;
+    --dark-gray: #333333;
+    --medium-gray: #888888;
+    --border-color: #eeeeee;
+    
+    /* Priority colors */
+    --high-priority: #e74c3c;
+    --medium-priority: #f39c12;
+    --low-priority: #3498db;
+}
+
+body {
+    background-color: var(--light-gray);
+    color: var(--dark-gray);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 100px 20px 40px;
+    background-color: #f5f5f5;
+}
+
+/* ====================================
+   NAVIGATION BAR
+   ==================================== */
+.navbar {
+    background-color: var(--white);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.nav-container {
+    display: flex;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 12px 20px;
+}
+
+/* Logo */
+.nav-logo {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.nav-logo img {
+    height: 40px;
+    width: auto;
+}
+
+/* Title section */
+.nav-title {
+    margin-right: auto;
+    border-left: 2px solid var(--orange-primary);
+    padding-left: 20px;
+}
+
+.nav-title h2 {
+    color: var(--orange-primary);
+    font-size: 20px;
+    margin: 0;
+    font-weight: 600;
+}
+
+.nav-title p {
+    color: var(--medium-gray);
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Navigation links */
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: var(--dark-gray);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 16px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    text-transform: capitalize;
+}
+
+.nav-links a:hover {
+    color: var(--orange-primary);
+    background-color: rgba(255, 111, 0, 0.05);
+}
+
+.nav-links a.active {
+    color: var(--orange-primary);
+    font-weight: bold;
+}
+
+/* Hamburger menu */
+.hamburger {
+    display: none;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 5px;
+}
+
+.hamburger span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: var(--dark-gray);
+    margin: 5px 0;
+    transition: all 0.3s;
+    transform-origin: center;
+}
+
+/* Hamburger Animation */
+.hamburger .rotate-down {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.hamburger .fade-out {
+    opacity: 0;
+}
+
+.hamburger .rotate-up {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* ====================================
+   CONTAINER & LAYOUT
+   ==================================== */
+.container {
+    width: 100%;
+    max-width: 600px;
+    margin-top: 10px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #ff7730;
+}
+
+.todo-container {
+    background-color: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* ====================================
+   TASK INPUT SECTION
+   ==================================== */
+.input-container {
+    display: flex;
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 8px;
+}
+
+#task-input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.input-row {
+    display: flex;
+    gap: 8px;
+}
+
+#due-date-input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#priority-select {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#add-task-btn {
+    padding: 10px 15px;
+    background-color: #ff7730;
+    color: var(--white);
+    border: none;
+    border-radius: 4px;
+    margin-left: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* ====================================
+   SEARCH & FILTERS
+   ==================================== */
+.search-container {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+#search-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.filters {
+    display: flex;
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--border-color);
+    justify-content: center;
+}
+
+.filter-btn {
+    background: none;
+    border: none;
+    padding: 5px 10px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.filter-btn.active {
+    background-color: #ff7730;
+    color: var(--white);
+}
+
+/* ====================================
+   TASK LIST & ITEMS
+   ==================================== */
+#task-list {
+    list-style-type: none;
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.task-item {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+}
+
+.task-item.completed .task-text {
+    text-decoration: line-through;
+    color: var(--medium-gray);
+}
+
+.task-checkbox {
+    margin-right: 10px;
+}
+
+.task-text {
+    flex: 1;
+}
+
+/* Priority indicators */
+.priority-high {
+    border-left: 4px solid var(--high-priority);
+}
+
+.priority-medium {
+    border-left: 4px solid var(--medium-priority);
+}
+
+.priority-low {
+    border-left: 4px solid var(--low-priority);
+}
+
+/* Due date display */
+.due-date {
+    font-size: 12px;
+    color: #666;
+    display: inline-block;
+    margin-top: 4px;
+}
+
+.due-date.overdue {
+    color: var(--high-priority);
+    font-weight: bold;
+}
+
+/* Task actions */
+.task-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.edit-btn,
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #555;
+    font-size: 14px;
+}
+
+.edit-btn:hover {
+    color: #ff7730;
+}
+
+.delete-btn:hover {
+    color: var(--high-priority);
+}
+
+/* ====================================
+   TASK EDITING INTERFACE
+   ==================================== */
+.editing-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 5px 0;
+}
+
+.edit-input {
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    width: 100%;
+}
+
+.edit-date {
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.edit-priority {
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.edit-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 5px;
+}
+
+.save-edit-btn,
+.cancel-edit-btn {
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    border: none;
+}
+
+.save-edit-btn {
+    background-color: #ff7730;
+    color: var(--white);
+}
+
+.cancel-edit-btn {
+    background-color: #eee;
+    color: var(--dark-gray);
+}
+
+.editing {
+    display: flex;
+    width: 100%;
+}
+
+/* ====================================
+   FOOTER
+   ==================================== */
+.list-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    color: var(--medium-gray);
+    font-size: 14px;
+}
+
+#clear-completed {
+    background: none;
+    border: none;
+    color: var(--medium-gray);
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#clear-completed:hover {
+    color: var(--high-priority);
+}
+
+/* ====================================
+   RESPONSIVE DESIGN
+   ==================================== */
+
+/* Large screens */
+@media screen and (max-width: 992px) {
+    .nav-links {
+        gap: 10px;
+    }
+    
+    .nav-links a {
+        font-size: 15px;
+        padding: 6px 10px;
+    }
+}
+
+/* Medium screens */
+@media screen and (max-width: 768px) {
+    .container {
+        max-width: 100%;
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
+    /* Navigation adjustments */
+    .nav-container {
+        flex-wrap: wrap;
+    }
+    
+    .nav-logo {
+        margin-right: 15px;
+    }
+    
+    .nav-logo img {
+        height: 35px;
+    }
+    
+    .hamburger {
+        display: block;
+        margin-left: auto;
+    }
+    
+    .nav-title {
+        order: 2;
+        border-left: none;
+        padding-left: 0;
+        width: 100%;
+        margin-top: 10px;
+        text-align: center;
+    }
+    
+    .nav-title h2 {
+        font-size: 18px;
+    }
+    
+    .nav-title p {
+        font-size: 12px;
+    }
+    
+    .nav-links {
+        order: 3;
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease;
+        margin-top: 0;
+    }
+    
+    .nav-links.open {
+        max-height: 200px;
+        margin-top: 10px;
+    }
+    
+    .nav-links a {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+    }
+    
+    body {
+        padding-top: 150px;
+    }
+
+    /* Make dropdowns more touch-friendly on medium screens */
+    #priority-select,
+    #due-date-input,
+    #sort-select,
+    .edit-priority,
+    .edit-date {
+        padding: 10px;
+        font-size: 15px;
+    }
+    
+    /* Improve sort container layout */
+    .sort-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .sort-container label {
+        margin-bottom: 5px;
+    }
+    
+    #sort-select {
+        width: 100%;
+    }
+    
+    /* Input row for date and priority */
+    .input-row {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    #due-date-input,
+    #priority-select {
+        width: 100%;
+    }
+}
+
+/* Small screens */
+@media screen and (max-width: 480px) {
+    /* Input adjustments */
+    .input-container {
+        flex-direction: column;
+    }
+
+    #task-input {
+        width: 100%;
+    }
+
+    #add-task-btn {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 10px;
+    }
+
+    /* Layout adjustments */
+    .task-actions {
+        flex-direction: column;
+    }
+
+    .filters {
+        flex-wrap: wrap;
+    }
+
+    .list-footer {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .editing-container {
+        gap: 6px;
+    }
+
+    .edit-actions {
+        flex-direction: column;
+    }
+
+    /* Navigation adjustments */
+    .nav-container {
+        padding: 10px 15px;
+    }
+    
+    .nav-logo {
+        margin-right: 10px;
+    }
+    
+    .nav-logo img {
+        height: 30px;
+    }
+    
+    .nav-title h2 {
+        font-size: 16px;
+    }
+    
+    .nav-title p {
+        display: none; /* Hide tagline on very small screens */
+    }
+    
+    .hamburger span {
+        width: 22px;
+        height: 2px;
+        margin: 4px 0;
+    }
+    
+    .hamburger .rotate-down {
+        transform: translateY(6px) rotate(45deg);
+    }
+    
+    .hamburger .rotate-up {
+        transform: translateY(-6px) rotate(-45deg);
+    }
+    
+    .nav-links {
+        gap: 5px;
+    }
+
+    .nav-links a {
+        padding: 6px 8px;
+        font-size: 14px;
+    }
+
+    body {
+        padding-top: 160px;
+    }
+
+    /* Enhance touch targets on small screens */
+    #priority-select,
+    #due-date-input,
+    #sort-select,
+    .edit-priority,
+    .edit-date {
+        padding: 12px;
+        font-size: 16px;
+        margin-bottom: 8px;
+        -webkit-appearance: none; /* Better styling for iOS */
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 20px;
+    }
+    
+    /* Fix layout for date fields */
+    input[type="date"] {
+        min-height: 44px; /* Better touch target */
+    }
+    
+    /* Make dropdowns in edit form more accessible */
+    .editing-container .edit-date,
+    .editing-container .edit-priority {
+        margin-bottom: 10px;
+    }
+    
+    /* Better select styling for edit form */
+    .edit-priority {
+        height: 44px;
+    }
+    
+    /* Better spacing for task filters */
+    .filters {
+        padding: 15px;
+        justify-content: space-between;
+    }
+    
+    .filter-btn {
+        flex: 1;
+        text-align: center;
+        padding: 8px 0;
+        margin: 0 2px;
+    }
+}
+
+/* Fix for desktop hover states */
+@media (hover: hover) {
+    #priority-select:hover,
+    #due-date-input:hover,
+    #sort-select:hover {
+        border-color: var(--orange-primary);
+    }
+}
+
+/* Fix for focus states on all devices */
+#priority-select:focus,
+#due-date-input:focus,
+#sort-select:focus,
+.edit-priority:focus,
+.edit-date:focus {
+    outline: none;
+    border-color: var(--orange-primary);
+    box-shadow: 0 0 0 2px rgba(255, 111, 0, 0.2);
+}

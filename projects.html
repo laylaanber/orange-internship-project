@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - Orange Coding Academy</title>
+    <link rel="stylesheet" href="css/projects.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <!-- Logo -->
+            <div class="nav-logo">
+                <img src="orange logo.webp" alt="Orange Logo">
+            </div>
+            
+            <!-- Site Title -->
+            <div class="nav-title">
+                <h2>Coding Academy</h2>
+                <p>Empowering digital talents</p>
+            </div>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="hamburger" id="menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <!-- Navigation Links -->
+            <div class="nav-links">
+                <a href="index.html">Tasks</a>
+                <a href="projects.html" class="active">Projects</a>
+                <!-- User info will be added dynamically -->
+            </div>
+        </div>
+    </nav>
+
+    <div class="app-container">
+        <!-- Enhanced Sidebar -->
+        <aside class="main-sidebar">
+            <!-- User Profile Section -->
+            <div class="sidebar-profile">
+                <div class="user-info">
+                    <div class="avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="user-details">
+                        <h4 id="sidebar-user-name">User</h4>
+                        <p id="sidebar-current-date">Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Summary -->
+            <div class="sidebar-stats">
+                <div class="stat-row">
+                    <div class="stat-item">
+                        <i class="fas fa-project-diagram"></i>
+                        <div>
+                            <span class="stat-count" id="projects-count">0</span>
+                            <span class="stat-label">Projects</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-tasks"></i>
+                        <div>
+                            <span class="stat-count" id="tasks-count">0</span>
+                            <span class="stat-label">Tasks</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <span class="stat-count" id="completed-count">0</span>
+                            <span class="stat-label">Done</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Projects Section -->
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <h3>My Projects</h3>
+                    <button id="new-project-btn" class="btn-icon"><i class="fas fa-plus"></i></button>
+                </div>
+                <ul class="project-list" id="project-list">
+                    <!-- Projects will be added here dynamically -->
+                </ul>
+            </div>
+            
+            <!-- Notes Section -->
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <h3>My Notes</h3>
+                    <button id="new-note-btn" class="btn-icon"><i class="fas fa-plus"></i></button>
+                </div>
+                <ul class="note-list" id="sidebar-note-list">
+                    <!-- Notes will be added here dynamically -->
+                </ul>
+            </div>
+            
+            <!-- Sidebar collapse button -->
+            <button class="sidebar-collapse-btn" id="sidebar-collapse-btn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content-area">
+            <!-- Board container -->
+            <div class="board-container">
+                <div class="board-header" id="board-header">
+                    <h2 id="project-title">Select a Project</h2>
+                    <div class="board-actions">
+                        <button id="graph-view-btn" class="btn-secondary"><i class="fas fa-project-diagram"></i> Graph View</button>
+                        <button id="add-list-btn" class="btn-primary"><i class="fas fa-plus"></i> Add List</button>
+                        <button id="edit-project-btn" class="btn-secondary"><i class="fas fa-edit"></i> Edit</button>
+                        <button id="delete-project-btn" class="btn-danger"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+
+                <div class="board-content" id="board-content">
+                    <!-- Default view when no project is selected -->
+                    <div class="no-project-selected" id="no-project-view">
+                        <div class="empty-state">
+                            <i class="fas fa-project-diagram fa-4x"></i>
+                            <h3>No Project Selected</h3>
+                            <p>Select an existing project from the sidebar or create a new one to get started.</p>
+                            <button id="create-first-project" class="btn-primary">Create First Project</button>
+                        </div>
+                    </div>
+
+                    <!-- Project board view (hidden initially) -->
+                    <div class="project-board" id="project-board" style="display: none;">
+                        <div class="lists-container" id="lists-container">
+                            <!-- Lists will be added here dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Graph View (hidden initially) -->
+            <div class="graph-view-container" id="graph-view">
+                <div class="graph-header">
+                    <h3>Knowledge Graph: <span id="graph-project-name">Project Name</span></h3>
+                    <button class="close-graph">&times;</button>
+                </div>
+                <div class="graph-content" id="graph-content">
+                    <!-- Graph will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Notes view area - will appear when selecting a note -->
+            <div class="note-view-container" id="note-view-container" style="display: none;">
+                <div class="note-view-header">
+                    <h2 id="note-view-title">Note Title</h2>
+                    <div class="note-actions">
+                        <button id="edit-note-btn" class="btn-secondary"><i class="fas fa-edit"></i> Edit</button>
+                        <button id="delete-note-btn" class="btn-danger"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+                <div class="note-view-content" id="note-view-content">
+                    <!-- Note content will be displayed here -->
+                </div>
+                <div class="note-view-tags" id="note-view-tags">
+                    <!-- Note tags will be displayed here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- All your existing modals here -->
+    <!-- Project Modal -->
+    <div class="modal" id="project-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Create New Project</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="project-form">
+                    <div class="form-group">
+                        <label for="project-name">Project Name</label>
+                        <input type="text" id="project-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="project-description">Description</label>
+                        <textarea id="project-description" rows="3"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary cancel-modal">Cancel</button>
+                        <button type="submit" class="btn-primary" id="save-project-btn">Create Project</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- List Modal -->
+    <div class="modal" id="list-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New List</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="list-form">
+                    <div class="form-group">
+                        <label for="list-name">List Name</label>
+                        <input type="text" id="list-name" placeholder="e.g., To Do, In Progress, Done" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary cancel-modal">Cancel</button>
+                        <button type="submit" class="btn-primary">Add List</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Modal -->
+    <div class="modal" id="card-modal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h3>Add New Card</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="card-form">
+                    <div class="form-group">
+                        <label for="card-title">Card Title</label>
+                        <input type="text" id="card-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="card-description">Description (Supports Markdown)</label>
+                        <div class="markdown-editor">
+                            <div class="toolbar">
+                                <button type="button" data-action="bold"><i class="fas fa-bold"></i></button>
+                                <button type="button" data-action="italic"><i class="fas fa-italic"></i></button>
+                                <button type="button" data-action="link"><i class="fas fa-link"></i></button>
+                                <button type="button" data-action="list"><i class="fas fa-list-ul"></i></button>
+                                <button type="button" data-action="heading"><i class="fas fa-heading"></i></button>
+                                <button type="button" data-action="reference" title="Reference another note"><i class="fas fa-file-alt"></i></button>
+                            </div>
+                            <textarea id="card-description" rows="6"></textarea>
+                            <div class="markdown-preview">
+                                <h4>Preview</h4>
+                                <div id="preview-content"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="card-due-date">Due Date</label>
+                            <input type="date" id="card-due-date">
+                        </div>
+                        <div class="form-group half">
+                            <label for="card-priority">Priority</label>
+                            <select id="card-priority">
+                                <option value="low">Low Priority</option>
+                                <option value="medium" selected>Medium Priority</option>
+                                <option value="high">High Priority</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Tags</label>
+                        <div class="tags-input">
+                            <input type="text" id="tag-input" placeholder="Add a tag and press Enter">
+                            <div class="tags-container" id="tags-container"></div>
+                            <input type="hidden" id="card-tags">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Linked Items</label>
+                        <div class="linked-items-container" id="linked-items">
+                            <!-- Linked items will appear here -->
+                        </div>
+                        <button type="button" class="btn-secondary btn-sm" id="add-link-btn">
+                            <i class="fas fa-plus"></i> Link a Note or Card
+                        </button>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="card-completed">
+                            Mark as completed
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary cancel-modal">Cancel</button>
+                        <button type="submit" class="btn-primary">Save Card</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Note Modal -->
+    <div class="modal" id="note-modal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h3 id="note-modal-title">Create New Note</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="note-form">
+                    <div class="form-group">
+                        <label for="note-title">Note Title</label>
+                        <input type="text" id="note-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="note-content">Content (Supports Markdown)</label>
+                        <div class="markdown-editor">
+                            <div class="toolbar">
+                                <button type="button" data-action="bold"><i class="fas fa-bold"></i></button>
+                                <button type="button" data-action="italic"><i class="fas fa-italic"></i></button>
+                                <button type="button" data-action="link"><i class="fas fa-link"></i></button>
+                                <button type="button" data-action="list"><i class="fas fa-list-ul"></i></button>
+                                <button type="button" data-action="heading"><i class="fas fa-heading"></i></button>
+                                <button type="button" data-action="reference" title="Reference another note"><i class="fas fa-file-alt"></i></button>
+                            </div>
+                            <textarea id="note-content" rows="10"></textarea>
+                            <div class="markdown-preview">
+                                <h4>Preview</h4>
+                                <div id="note-preview-content"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Tags</label>
+                        <div class="tags-input">
+                            <input type="text" id="note-tag-input" placeholder="Add a tag and press Enter">
+                            <div class="tags-container" id="note-tags-container"></div>
+                            <input type="hidden" id="note-tags">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary cancel-modal">Cancel</button>
+                        <button type="submit" class="btn-primary" id="save-note-btn">Create Note</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add D3.js library before your projects.js script -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script type="module" src="js/projects/main.js"></script>
+</body>
+</html>
