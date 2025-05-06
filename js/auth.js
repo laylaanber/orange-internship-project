@@ -286,13 +286,3 @@ function checkAuth() {
     return !!(session && session.loggedIn);
 }
 
-// Export functions for use in other modules
-export {
-    login,
-    register,
-    logout,
-    checkAuth,
-    isLoggedIn,
-    getCurrentUser,
-    checkPasswordStrength
-};

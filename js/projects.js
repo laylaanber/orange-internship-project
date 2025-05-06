@@ -1336,9 +1336,16 @@ function updateNotePreview() {
         notePreviewContent.innerHTML = convertMarkdownToHTML(markdown);
     }
 }
-
+/**
+ * Get the current selected project
+ * @returns {object|null} The current project or null if none is selected
+ */
+function getCurrentProject() {
+    return currentProject;
+}
 // Render the knowledge graph with D3.js
 function openKnowledgeGraph() {
+    const currentProject = getCurrentProject();
     if (!currentProject) return;
     
     graphProjectName.textContent = currentProject.name;
@@ -1377,12 +1384,20 @@ function openKnowledgeGraph() {
         
         // Add cards as nodes
         list.cards.forEach(card => {
+            let color;
+            switch(card.priority) {
+                case 'high': color = '#e74c3c'; break;
+                case 'medium': color = '#f39c12'; break;
+                default: color = '#2ecc71';
+            }
+            
             nodes.push({
                 id: card.id,
                 name: card.title,
                 type: 'card',
-                color: card.priority === 'high' ? '#e74c3c' : 
-                       card.priority === 'medium' ? '#f39c12' : '#2ecc71'
+                color: color,
+                completed: card.completed || false,
+                due: card.dueDate
             });
             
             // Link card to list
@@ -1395,13 +1410,14 @@ function openKnowledgeGraph() {
     });
     
     // Add notes as nodes
-    if (currentProject.notes) {
+    if (currentProject.notes && currentProject.notes.length > 0) {
         currentProject.notes.forEach(note => {
             nodes.push({
                 id: note.id,
                 name: note.title,
                 type: 'note',
-                color: '#9b59b6'
+                color: '#9b59b6',
+                tags: note.tags || []
             });
             
             // Link note to project
@@ -1413,41 +1429,121 @@ function openKnowledgeGraph() {
         });
     }
     
-    // Set up D3 force simulation
+    // Check if D3.js is available
+    if (window.d3) {
+        renderEnhancedD3Graph(nodes, links);
+        
+        // Set up zoom controls
+        document.querySelector('.zoom-in-btn').addEventListener('click', () => zoomGraph(1.2));
+        document.querySelector('.zoom-out-btn').addEventListener('click', () => zoomGraph(0.8));
+        document.querySelector('.reset-zoom-btn').addEventListener('click', resetGraphZoom);
+    } else {
+        graphContent.innerHTML = `
+            <div style="text-align: center; padding: 50px; color: white;">
+                <p>D3.js library is required for the knowledge graph visualization.</p>
+                <p>Please ensure the D3.js script is properly loaded.</p>
+            </div>
+        `;
+    }
+}
+
+// Add this new enhanced graph rendering function
+function renderEnhancedD3Graph(nodes, links) {
     const width = graphContent.clientWidth;
     const height = graphContent.clientHeight;
     
-    const svg = d3.select('#graph-content').append('svg')
-        .attr('width', width)
-        .attr('height', height)
+    // Create SVG
+    const svg = d3.select('#graph-content')
+        .append('svg')
+        .attr('width', '100%')
+        .attr('height', '100%')
         .attr('viewBox', [0, 0, width, height]);
     
-    // Add a background
-    svg.append('rect')
-        .attr('width', width)
-        .attr('height', height)
-        .attr('fill', 'rgba(0,0,0,0.8)');
+    // Add a subtle grid background
+    const gridSize = 30;
+    const gridGroup = svg.append('g')
+        .attr('class', 'grid');
     
-    // Create a force simulation
+    for (let x = 0; x < width; x += gridSize) {
+        gridGroup.append('line')
+            .attr('x1', x)
+            .attr('y1', 0)
+            .attr('x2', x)
+            .attr('y2', height)
+            .attr('stroke', 'rgba(255, 255, 255, 0.05)')
+            .attr('stroke-width', 1);
+    }
+    
+    for (let y = 0; y < height; y += gridSize) {
+        gridGroup.append('line')
+            .attr('x1', 0)
+            .attr('y1', y)
+            .attr('x2', width)
+            .attr('y2', y)
+            .attr('stroke', 'rgba(255, 255, 255, 0.05)')
+            .attr('stroke-width', 1);
+    }
+    
+    // Set up zoom behavior
+    const g = svg.append('g');
+    
+    const zoom = d3.zoom()
+        .scaleExtent([0.1, 4])
+        .on('zoom', (event) => {
+            g.attr('transform', event.transform);
+        });
+    
+    svg.call(zoom);
+    
+    // Create force simulation
     const simulation = d3.forceSimulation(nodes)
         .force('link', d3.forceLink(links).id(d => d.id).distance(100))
-        .force('charge', d3.forceManyBody().strength(-300))
+        .force('charge', d3.forceManyBody().strength(-400))
         .force('center', d3.forceCenter(width / 2, height / 2))
-        .force('collision', d3.forceCollide().radius(40));
+        .force('collision', d3.forceCollide().radius(d => 
+            d.type === 'project' ? 50 : 
+            d.type === 'list' ? 40 : 30));
     
-    // Create links
-    const link = svg.append('g')
-        .selectAll('line')
+    // Create links with gradients
+    const linksGroup = g.append('g')
+        .attr('class', 'links');
+    
+    // Add gradient definitions
+    const defs = svg.append('defs');
+    
+    links.forEach((link, i) => {
+        const sourceNode = nodes.find(n => n.id === link.source);
+        const targetNode = nodes.find(n => n.id === link.target);
+        
+        if (sourceNode && targetNode) {
+            const gradientId = `link-gradient-${i}`;
+            const gradient = defs.append('linearGradient')
+                .attr('id', gradientId)
+                .attr('gradientUnits', 'userSpaceOnUse');
+                
+            gradient.append('stop')
+                .attr('offset', '0%')
+                .attr('stop-color', sourceNode.color);
+                
+            gradient.append('stop')
+                .attr('offset', '100%')
+                .attr('stop-color', targetNode.color);
+        }
+    });
+    
+    const link = linksGroup.selectAll('line')
         .data(links)
         .enter()
         .append('line')
-        .attr('stroke', '#999')
-        .attr('stroke-opacity', 0.6)
-        .attr('stroke-width', d => Math.sqrt(d.value));
+        .attr('class', 'link')
+        .attr('stroke', (d, i) => `url(#link-gradient-${i})`)
+        .attr('stroke-width', d => Math.sqrt(d.value) * 1.5)
+        .attr('stroke-dasharray', d => d.dashed ? '5,5' : '0');
     
-    // Create nodes
-    const node = svg.append('g')
-        .selectAll('.node')
+    // Create node groups
+    const node = g.append('g')
+        .attr('class', 'nodes')
+        .selectAll('g')
         .data(nodes)
         .enter()
         .append('g')
@@ -1455,66 +1551,47 @@ function openKnowledgeGraph() {
         .call(d3.drag()
             .on('start', dragstarted)
             .on('drag', dragged)
-            .on('end', dragended));
+            .on('end', dragended))
+        .on('click', nodeClicked)
+        .on('mouseover', nodeMouseOver)
+        .on('mouseout', nodeMouseOut);
     
-    // Node circles
+    // Add glowing effect
     node.append('circle')
-        .attr('r', d => d.type === 'project' ? 30 : d.type === 'list' ? 20 : 15)
+        .attr('r', d => 
+            d.type === 'project' ? 30 : 
+            d.type === 'list' ? 20 : 15)
+        .attr('fill', d => d.color)
+        .attr('opacity', 0.7)
+        .attr('filter', 'url(#glow)');
+    
+    // Add main circle
+    node.append('circle')
+        .attr('r', d => 
+            d.type === 'project' ? 25 : 
+            d.type === 'list' ? 18 : 12)
         .attr('fill', d => d.color)
         .attr('stroke', '#fff')
-        .attr('stroke-width', 1.5);
+        .attr('stroke-width', 2);
     
-    // Node labels
+    // Add completion indicator for cards
+    node.filter(d => d.type === 'card')
+        .append('circle')
+        .attr('r', 4)
+        .attr('cx', 0)
+        .attr('cy', 0)
+        .attr('fill', d => d.completed ? '#2ecc71' : 'transparent')
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 1);
+    
+    // Add icons
     node.append('text')
-        .attr('dx', 0)
-        .attr('dy', d => d.type === 'project' ? 40 : 25)
         .attr('text-anchor', 'middle')
-        .attr('fill', '#fff')
-        .attr('font-size', d => d.type === 'project' ? 14 : 12)
-        .text(d => d.name)
-        .attr('pointer-events', 'none')
-        .each(function(d) {
-            const text = d3.select(this);
-            const words = d.name.split(' ');
-            const lineHeight = 1.1; // ems
-            text.text(null);
-            
-            // Limit to 15 characters per line
-            const tspan = text.append('tspan')
-                .attr('x', 0)
-                .attr('dy', 0);
-            
-            let line = '';
-            let lineCount = 0;
-            
-            words.forEach((word, i) => {
-                const testLine = line + word + ' ';
-                if (testLine.length > 15) {
-                    tspan.text(line);
-                    line = word + ' ';
-                    lineCount++;
-                    text.append('tspan')
-                        .attr('x', 0)
-                        .attr('dy', lineHeight + 'em')
-                        .text(line);
-                } else {
-                    line = testLine;
-                }
-            });
-            
-            if (line.length && lineCount === 0) {
-                tspan.text(line);
-            }
-        });
-    
-    // Type indicators
-    node.append('text')
-        .attr('dx', 0)
         .attr('dy', 5)
-        .attr('text-anchor', 'middle')
-        .attr('fill', '#fff')
-        .attr('font-size', 10)
-        .text(d => {
+        .attr('fill', '#ffffff')
+        .attr('font-size', d => 
+            d.type === 'project' ? 14 : 10)
+        .html(d => {
             switch(d.type) {
                 case 'project': return '📋';
                 case 'list': return '📑';
@@ -1522,10 +1599,53 @@ function openKnowledgeGraph() {
                 case 'note': return '📌';
                 default: return '';
             }
-        })
-        .attr('pointer-events', 'none');
+        });
     
-    // Update simulation on tick
+    // Add labels
+    node.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('dy', d => 
+            d.type === 'project' ? 45 : 35)
+        .attr('fill', '#ffffff')
+        .attr('font-size', d => 
+            d.type === 'project' ? 14 : 12)
+        .text(d => {
+            const name = d.name || '';
+            return name.length > 20 ? name.substring(0, 18) + '...' : name;
+        });
+    
+    // Add glow filter
+    const filter = defs.append('filter')
+        .attr('id', 'glow')
+        .attr('x', '-50%')
+        .attr('y', '-50%')
+        .attr('width', '200%')
+        .attr('height', '200%');
+        
+    filter.append('feGaussianBlur')
+        .attr('stdDeviation', '3')
+        .attr('result', 'coloredBlur');
+        
+    const feMerge = filter.append('feMerge');
+    feMerge.append('feMergeNode')
+        .attr('in', 'coloredBlur');
+    feMerge.append('feMergeNode')
+        .attr('in', 'SourceGraphic');
+    
+    // Define tooltip
+    const tooltip = d3.select('#graph-content')
+        .append('div')
+        .attr('class', 'graph-tooltip')
+        .style('position', 'absolute')
+        .style('background-color', 'rgba(0, 0, 0, 0.8)')
+        .style('color', 'white')
+        .style('padding', '10px')
+        .style('border-radius', '5px')
+        .style('pointer-events', 'none')
+        .style('opacity', 0)
+        .style('z-index', 1000);
+    
+    // Update force simulation on tick
     simulation.on('tick', () => {
         link
             .attr('x1', d => Math.max(30, Math.min(width - 30, d.source.x)))
@@ -1540,7 +1660,7 @@ function openKnowledgeGraph() {
         });
     });
     
-    // Drag functions
+    // Define drag functions
     function dragstarted(event, d) {
         if (!event.active) simulation.alphaTarget(0.3).restart();
         d.fx = d.x;
@@ -1557,6 +1677,117 @@ function openKnowledgeGraph() {
         d.fx = null;
         d.fy = null;
     }
+    
+    // Node interaction functions
+    function nodeClicked(event, d) {
+        // Handle node click - view list, card or note
+        if (d.type === 'card') {
+            const list = currentProject.lists.find(list => 
+                list.cards.some(card => card.id === d.id));
+                
+            if (list) {
+                const card = list.cards.find(card => card.id === d.id);
+                openCardModal(list.id, card);
+            }
+        } else if (d.type === 'note') {
+            const note = currentProject.notes.find(note => note.id === d.id);
+            if (note) viewNote(d.id);
+        }
+        
+        // Add visual feedback
+        d3.select(this).select('circle').transition()
+            .duration(200)
+            .attr('r', r => r + 5)
+            .transition()
+            .duration(200)
+            .attr('r', d => 
+                d.type === 'project' ? 25 : 
+                d.type === 'list' ? 18 : 12);
+    }
+    
+    function nodeMouseOver(event, d) {
+        // Show tooltip with details
+        let tooltipContent = `<div style="font-weight:bold">${d.name}</div>`;
+        
+        if (d.type === 'card') {
+            if (d.due) tooltipContent += `<div>Due: ${formatDate(new Date(d.due))}</div>`;
+            tooltipContent += `<div>Status: ${d.completed ? 'Completed' : 'Pending'}</div>`;
+        }
+        
+        if (d.type === 'note' && d.tags && d.tags.length > 0) {
+            tooltipContent += `<div>Tags: ${d.tags.join(', ')}</div>`;
+        }
+        
+        tooltip.html(tooltipContent)
+            .style('left', (event.pageX + 10) + 'px')
+            .style('top', (event.pageY - 10) + 'px')
+            .transition()
+            .duration(200)
+            .style('opacity', 0.9);
+            
+        // Highlight connected links and nodes
+        const connectedNodeIds = new Set();
+        links.forEach(link => {
+            if (link.source.id === d.id || link.source === d.id) {
+                connectedNodeIds.add(typeof link.target === 'object' ? link.target.id : link.target);
+            } else if (link.target.id === d.id || link.target === d.id) {
+                connectedNodeIds.add(typeof link.source === 'object' ? link.source.id : link.source);
+            }
+        });
+        
+        node.classed('dimmed', n => n.id !== d.id && !connectedNodeIds.has(n.id));
+        link.classed('highlighted', l => 
+            l.source.id === d.id || l.target.id === d.id || 
+            l.source === d.id || l.target === d.id);
+    }
+    
+    function nodeMouseOut() {
+        tooltip.transition()
+            .duration(200)
+            .style('opacity', 0);
+            
+        node.classed('dimmed', false);
+        link.classed('highlighted', false);
+    }
+    
+    // Initial center and zoom to fit
+    const initialTransform = d3.zoomIdentity
+        .translate(width/2, height/2)
+        .scale(0.8)
+        .translate(-width/2, -height/2);
+        
+    svg.call(zoom.transform, initialTransform);
+}
+
+// Zoom control functions
+function zoomGraph(factor) {
+    const svg = d3.select('#graph-content svg');
+    const zoom = d3.zoom().on('zoom', (event) => {
+        d3.select('#graph-content svg g').attr('transform', event.transform);
+    });
+    
+    svg.transition()
+        .duration(300)
+        .call(zoom.scaleBy, factor);
+}
+
+function resetGraphZoom() {
+    const svg = d3.select('#graph-content svg');
+    const width = graphContent.clientWidth;
+    const height = graphContent.clientHeight;
+    
+    const zoom = d3.zoom().on('zoom', (event) => {
+        d3.select('#graph-content svg g').attr('transform', event.transform);
+    });
+    
+    const initialTransform = d3.zoomIdentity
+        .translate(width/2, height/2)
+        .scale(0.8)
+        .translate(-width/2, -height/2);
+    
+    svg.transition()
+        .duration(500)
+        .call(zoom.transform, initialTransform);
 }
 
 // Add a new tag

@@ -147,10 +147,31 @@
             <div class="graph-view-container" id="graph-view">
                 <div class="graph-header">
                     <h3>Knowledge Graph: <span id="graph-project-name">Project Name</span></h3>
-                    <button class="close-graph">&times;</button>
+                    <button class="close-graph" aria-label="Close graph view">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
+                
                 <div class="graph-content" id="graph-content">
                     <!-- Graph will be rendered here -->
+                </div>
+                
+                <div class="graph-view-legend">
+                    <h4>Legend</h4>
+                    <ul>
+                        <li><span class="legend-color" style="background-color: #ff6f00;"></span> Project</li>
+                        <li><span class="legend-color" style="background-color: #3498db;"></span> List</li>
+                        <li><span class="legend-color" style="background-color: #e74c3c;"></span> High Priority</li>
+                        <li><span class="legend-color" style="background-color: #f39c12;"></span> Medium Priority</li>
+                        <li><span class="legend-color" style="background-color: #2ecc71;"></span> Low Priority</li>
+                        <li><span class="legend-color" style="background-color: #9b59b6;"></span> Note</li>
+                    </ul>
+                </div>
+                
+                <div class="graph-controls">
+                    <button class="zoom-in-btn" title="Zoom In"><i class="fas fa-plus"></i></button>
+                    <button class="zoom-out-btn" title="Zoom Out"><i class="fas fa-minus"></i></button>
+                    <button class="reset-zoom-btn" title="Reset View"><i class="fas fa-sync-alt"></i></button>
                 </div>
             </div>
 
@@ -349,6 +370,6 @@
 
     <!-- Add D3.js library before your projects.js script -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script type="module" src="js/projects/main.js"></script>
+    <script src="js/projects.js"></script>
 </body>
 </html>
